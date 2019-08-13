@@ -1,3 +1,15 @@
+Updated to display information relevant to the daily plans 
+- Temp Min
+- Temp Current
+- Temp Max
+- Rain Probability
+- Rain mm
+- Humidity
+- Wind Speed
+- Cloud Cover
+- UV Index
+
+-------------- Info From Forked Repo----------------
 This repository is maintained by Cowboysdude 
 [This is the third version of this module for MagicMirror2]
 
