@@ -198,10 +198,10 @@ Module.register("MMM-NOAA3", {
         this.tempLowFeel = this.roundTemp(this.weatherData.daily.data[0].apparentTemperatureLow);
         this.tempNowFeel = this.roundTemp(this.weatherData.currently.apparentTemperature);
         this.tempMaxFeel = this.roundTemp(this.weatherData.daily.data[0].apparentTemperatureHigh);
-        this.rainProb = this.weatherData.daily.data[0].precipProbability * 100;
-        this.rainMM = 0.1; //this.roundRain(this.weatherData.daily.data[0].precipIntensity * 24);
-        this.humidity = this.weatherData.daily.data[0].humidity * 100;
-        this.cloud = this.weatherData.daily.data[0].cloudCover * 100;
+        this.rainProb = this.roundTemp(this.weatherData.daily.data[0].precipProbability * 100);
+        this.rainMM = this.roundRain(this.weatherData.daily.data[0].precipIntensity * 24);
+        this.humidity = this.roundTemp(this.weatherData.daily.data[0].humidity * 100);
+        this.cloud = this.roundTemp(this.weatherData.daily.data[0].cloudCover * 100);
         this.uvNow = this.weatherData.currently.uvIndex;
         this.uvMax = this.weatherData.daily.data[0].uvIndex;
         this.windSpeedNow = this.roundTemp(this.weatherData.currently.windSpeed);
