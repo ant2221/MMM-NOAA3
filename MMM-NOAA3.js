@@ -199,7 +199,7 @@ Module.register("MMM-NOAA3", {
         this.tempNowFeel = this.roundTemp(this.weatherData.currently.apparentTemperature);
         this.tempMaxFeel = this.roundTemp(this.weatherData.daily.data[0].apparentTemperatureHigh);
         this.rainProb = this.weatherData.daily.data[0].precipProbability * 100;
-        this.rainMM = this.roundTemp(this.weatherData.daily.data[0].precipIntensity) * 24;
+        this.rainMM = 0.1; //this.roundRain(this.weatherData.daily.data[0].precipIntensity * 24);
         this.humidity = this.weatherData.daily.data[0].humidity * 100;
         this.cloud = this.weatherData.daily.data[0].cloudCover * 100;
         this.uvNow = this.weatherData.currently.uvIndex;
@@ -209,11 +209,86 @@ Module.register("MMM-NOAA3", {
         this.windSpeed = this.roundTemp(this.weatherData.daily.data[0].windSpeed);
         this.windGust = this.roundTemp(this.weatherData.daily.data[0].windGust);
     
+        //this.tempLowcolour = "divTableHeadRed";
+
+        if (this.tempLow < 10) {
+            this.tempLowColour = "divTableHeadRed"
+        } else if (this.tempLow < 15) {
+            this.tempLowColour = "divTableHeadYellow"
+        } else {
+            this.tempLowColour = "divTableHead"
+        }
+
+        if (this.tempNow < 10) {
+            this.tempNowColour = "divTableHeadRed"
+        } else if (this.tempNow < 15) {
+            this.tempNowColour = "divTableHeadYellow"
+        } else {
+            this.tempNowColour = "divTableHead"
+        }
+
+        if (this.tempMax > 30) {
+            this.tempMaxColour = "divTableHeadRed"
+        } else if (this.tempMax > 25) {
+            this.tempMaxColour = "divTableHeadYellow"
+        } else {
+            this.tempMaxColour = "divTableHead"
+        }
+
+        if (this.rainProb > 50 && this.rainMM > 0.2) {
+            this.rainColour = "divTableHeadRed"
+        } else if (this.rainProb > 75 && this.rainMM > 0.8) {
+            this.rainColour = "divTableHeadYellow"
+        } else {
+            this.rainColour = "divTableHead"
+        }
+        
+        if (this.humidity > 75) {
+            this.humidityColour = "divTableHeadRed"
+        } else if (this.humidity > 60) {
+            this.humidityColour = "divTableHeadYellow"
+        } else {
+            this.humidityColour = "divTableHead"
+        }
+
+        if (this.windSpeed > 8) {
+            this.windColour = "divTableHeadRed"
+        } else if (this.windSpeed > 14) {
+            this.windColour = "divTableHeadYellow"
+        } else {
+            this.windColour = "divTableHead"
+        }
+
+        if (this.cloud > 66) {
+            this.cloudColour = "divTableHeadRed"
+        } else if (this.cloud > 33) {
+            this.cloudColour = "divTableHeadYellow"
+        } else {
+            this.cloudColour = "divTableHead"
+        }
+        
+        if (this.uvMax > 6) {
+            this.uvColour = "divTableHeadRed"
+        } else if (this.uvMax > 8) {
+            this.uvColour = "divTableHeadYellow"
+        } else {
+            this.uvColour = "divTableHead"
+        }
+
         this.updateDom(this.config.animationSpeed);
         //this.scheduleUpdate();
       },
         roundTemp: function (temp) {
     var scalar = 1 << this.config.tempDecimalPlaces;
+
+    temp *= scalar;
+    temp  = Math.round( temp );
+    temp /= scalar;
+
+    return temp;
+  },
+  roundRain: function (temp) {
+    var scalar = 1 << 2;
 
     temp *= scalar;
     temp  = Math.round( temp );
@@ -369,9 +444,9 @@ console.log(this.issue);
 		`<div class="divTable">
           <div class="divTableBody">
         <div class="divTableRow">
-            <div class="divTableHead">${this.translate("Min")}</div>
-            <div class="divTableHead">${this.translate("Temp")}</div>
-            <div class="divTableHead">${this.translate("Max")}</div>
+            <div class=${this.tempLowColour}>${this.translate("Min")}</div>
+            <div class=${this.tempNowColour}>${this.translate("Temp")}</div>
+            <div class=${this.tempMaxColour}>${this.translate("Max")}</div>
         </div>
 		
 		<div class="divTableRow">
@@ -400,9 +475,9 @@ console.log(this.issue);
    <div class="divTableBody">
    
       <div class="divTableRow">
-         <div class="divTableHead">${this.translate("Rain&nbsp;%")}</div>
-         <div class="divTableHead">${this.translate("Rain&nbsp;mm")}</div>
-         <div class="divTableHead">${this.translate("Humidity")}</div>
+         <div class=${this.rainColour}>${this.translate("Rain&nbsp;%")}</div>
+         <div class=${this.rainColour}>${this.translate("Rain&nbsp;mm")}</div>
+         <div class=${this.humidityColour}>${this.translate("Humidity")}</div>
       </div>
 	 
       <div class="divTableRow">
@@ -447,9 +522,9 @@ console.log(this.issue);
    <div class="divTableBody">
   
       <div class="divTableRow">
-         <div class="divTableHead">${"Wind"}</div>
-         <div class="divTableHead">${"Cloud"}</div>
-         <div class="divTableHead">${"UV&nbsp;Index"}</div>
+         <div class=${this.windColour}>${"Wind"}</div>
+         <div class=${this.cloudColour}>${"Cloud"}</div>
+         <div class=${this.uvColour}>${"UV&nbsp;Index"}</div>
       </div>
 	   
       <div class="divTableRow">
