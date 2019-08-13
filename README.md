@@ -9,6 +9,13 @@ Updated to display information relevant to the daily plans
 - Cloud Cover
 - UV Index
 
+![](examples/AntUpdate.png) 
+
+Thanks to 
+https://github.com/cowboysdude/MMM-NOAA3
+https://github.com/jclarke0000/MMM-DarkSkyForecast
+combining the two for this output.
+
 -------------- Info From Forked Repo----------------
 This repository is maintained by Cowboysdude 
 [This is the third version of this module for MagicMirror2]
