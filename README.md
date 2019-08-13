@@ -15,6 +15,26 @@ Updated to display information relevant to the daily plans
 *  `cd MMM-NOAA3a`
 *  `npm install`
 
+*		{
+*			module: 'MMM-NOAA3',
+*			position: 'top_left',
+*			config: {
+*				provider: "darksky",   
+*				zip: "", 					//MUST have valid zip Code
+*				airKey: "AIRKEY", 
+*				css: "NOAA3",					//THIS MUST CONTAIN A CSS STYLE NAME 
+*				userlat: "-12.847",				//MUST HAVE BOTH
+*				userlon: "51.213",				//MUST HAVE BOTH
+*				// See 'Configuration options' for more information.
+*				apiKey: '', // Dark Sky API key.
+*				// Only required if geolocation doesn't work:
+*				latitude:  -12.84,
+*				longitude: 51.21,
+*				units: "metric"
+*			}
+*		},
+
+
 Thanks to 
 https://github.com/cowboysdude/MMM-NOAA3
 https://github.com/jclarke0000/MMM-DarkSkyForecast
