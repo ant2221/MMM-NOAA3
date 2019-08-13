@@ -11,6 +11,10 @@ Updated to display information relevant to the daily plans
 
 ![](examples/AntUpdate.png) 
 
+* `git clone https://github.com/ant2221/MMM-NOAA3a` into the `~/MagicMirror/modules` directory.
+*  `cd MMM-NOAA3a`
+*  `npm install`
+
 Thanks to 
 https://github.com/cowboysdude/MMM-NOAA3
 https://github.com/jclarke0000/MMM-DarkSkyForecast
