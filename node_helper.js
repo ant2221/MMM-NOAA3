@@ -44,7 +44,7 @@ module.exports = NodeHelper.create({
 			this.getMoonData();
 			if (this.providers[config.provider] == 'ds'){
 				console.log(this.providers[config.provider]);
-				 //this.getALERT()
+				 this.getALERT()
 		    };
         }
         this.scheduleUpdate(this.config.updateInterval);
@@ -57,8 +57,8 @@ module.exports = NodeHelper.create({
             self.getData();
             self.getSRSS();
             self.getAIR(); 
-			//self.getALERT(); 
-			//console.log(this.providers[this.config.provider]);
+			self.getALERT(); 
+console.log(this.providers[this.config.provider]);
 			if (self.providers[config.provider] == 'ds'){self.getALERT()};
         }, self.config.updateInterval);
     },

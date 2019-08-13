@@ -20,7 +20,14 @@ Module.register("MMM-NOAA3", {
 		nupdate: false,
 		userlat: "",
 		userlon: "",
-
+        unitTable: {
+            'default':  'auto',
+            'metric':   'si',
+            'imperial': 'us'
+          },
+        apiBase: "https://api.darksky.net/forecast",
+        units: config.units,
+        language: config.language,
         langFile: {
             "en": "en-US",
             "de": "de-DE",
@@ -30,8 +37,7 @@ Module.register("MMM-NOAA3", {
             "zh_cn": "zh-CN",
             "da": "da",
             "nl": "nl-NL",
-            "nb": "nb-NO",
-	    "gr": "gr"
+            "nb": "nb-NO"
         },
 
         langTrans: {
@@ -44,7 +50,6 @@ Module.register("MMM-NOAA3", {
             "da": "DK",
             "nl": "NL",
             "nb": "NO",
-	    "gr": "GR"
         },
 
         levelTrans: {
@@ -78,8 +83,7 @@ Module.register("MMM-NOAA3", {
 			"Full Moon": 'modules/MMM-NOAA3/images/moon/fullmoon.png',
 			"Waning Gibbous": 'modules/MMM-NOAA3/images/moon/waninggibbous.png',
 			"Waning Crescent": 'modules/MMM-NOAA3/images/moon/waningcrescent.png',
-			"Waxing Crescent": 'modules/MMM-NOAA3/images/moon/waxingcrescent.png',
-			"3rd Quarter":'modules/MMM-NOAA3/images/moon/thirdquarter.png'
+			"Waxing Crescent": 'modules/MMM-NOAA3/images/moon/waxingcrescent.png'
 		}
     },
 
@@ -95,8 +99,7 @@ Module.register("MMM-NOAA3", {
             zh_cn: "translations/zh_cn.json",
             nl: "translations/nl.json",
             nb: "translations/nb.json",
-	    it: "translations/it.json",
-	    gr: "translations/gr.json"
+			it: "translations/it.json"
         };
 
     },
@@ -127,7 +130,10 @@ Module.register("MMM-NOAA3", {
     },
 
     getScripts: function() {
-        return ['moment.js'];
+        return [
+        'moment.js',
+        'jsonp.js'
+        ];    
     },
 
     getStyles: function() {
@@ -163,9 +169,65 @@ Module.register("MMM-NOAA3", {
         this.activeItem = 0;
         this.rotateInterval = null; 
         this.loaded = true;
+        Log.info("Started module: " + this.name);
+        this.updateWeather();
     },
 	
-	 
+    updateWeather: function () {
+    
+        var units = this.config.unitTable[this.config.units] || 'auto';
+    
+        var url = this.config.apiBase + '/' + this.config.apiKey + '/' + this.config.latitude + ',' + this.config.longitude + '?units=' + units + '&lang=' + this.config.language;
+        if (this.config.data) {
+          // for debugging
+          this.processWeather1(this.config.data);
+        } else {
+          getJSONP(url, this.processWeather1.bind(this), this.processWeatherError.bind(this));
+        }
+      },
+
+      processWeather1: function (data) {
+        if (this.config.debug) {
+          console.log('weather data', data);
+        }
+        this.loaded = true;
+        this.weatherData = data;
+        this.tempLow = this.roundTemp(this.weatherData.daily.data[0].temperatureLow);
+        this.tempNow = this.roundTemp(this.weatherData.currently.temperature);
+        this.tempMax = this.roundTemp(this.weatherData.daily.data[0].temperatureHigh);
+        this.tempLowFeel = this.roundTemp(this.weatherData.daily.data[0].apparentTemperatureLow);
+        this.tempNowFeel = this.roundTemp(this.weatherData.currently.apparentTemperature);
+        this.tempMaxFeel = this.roundTemp(this.weatherData.daily.data[0].apparentTemperatureHigh);
+        this.rainProb = this.weatherData.daily.data[0].precipProbability * 100;
+        this.rainMM = this.roundTemp(this.weatherData.daily.data[0].precipIntensity) * 24;
+        this.humidity = this.weatherData.daily.data[0].humidity * 100;
+        this.cloud = this.weatherData.daily.data[0].cloudCover * 100;
+        this.uvNow = this.weatherData.currently.uvIndex;
+        this.uvMax = this.weatherData.daily.data[0].uvIndex;
+        this.windSpeedNow = this.roundTemp(this.weatherData.currently.windSpeed);
+        this.windGustNow = this.roundTemp(this.weatherData.currently.windGust);
+        this.windSpeed = this.roundTemp(this.weatherData.daily.data[0].windSpeed);
+        this.windGust = this.roundTemp(this.weatherData.daily.data[0].windGust);
+    
+        this.updateDom(this.config.animationSpeed);
+        //this.scheduleUpdate();
+      },
+        roundTemp: function (temp) {
+    var scalar = 1 << this.config.tempDecimalPlaces;
+
+    temp *= scalar;
+    temp  = Math.round( temp );
+    temp /= scalar;
+
+    return temp;
+  },
+      processWeatherError: function (error) {
+        if (this.config.debug) {
+          console.log('process weather error', error);
+        }
+        // try later
+        //this.scheduleUpdate();
+      },
 
     socketNotificationReceived: function(notification, payload) {
 		if (notification === "WEATHER_RESULT") {
@@ -196,11 +258,12 @@ console.log(this.moon);
 	
     processAIR: function(data) {
         this.air = data.air;
+console.log(this.air);
     },
     processSRSS: function(data) {
         this.srss = data;
 		srss = this.srss;
-		//console.log(srss);
+console.log(this.srss);
     },
 	
 	processWeather: function(data) {
@@ -220,6 +283,7 @@ console.log(this.issue);
 	scheduleCarousel: function() {
         this.rotateInterval = setInterval(() => {
             this.activeItem++;
+            this.updateWeather();
             this.updateDom();
         }, this.config.rotateInterval);
     },
@@ -237,7 +301,7 @@ console.log(this.issue);
 		
         var wrapper = document.createElement("div");
         var current = this.current.current;
-//console.log(current);
+
         var d = new Date();
         var n = d.getHours();
  
@@ -258,7 +322,8 @@ console.log(this.issue);
             var wind_mph = Math.round(current.current.wind_mph);
             var wind_kph = Math.round(current.current.wind_kph);
         }
- //console.log('this is from NOAA3 '+weather);
+            console.log(this.current);
+            console.log('this is from NOAA3 '+ this.weather);
         var cweat = document.createElement("div");
         cweat.classList.add("small", "bright", "floatl");
         if (this.config.provider === 'openweather' && this.config.lang != 'en') {
@@ -292,7 +357,7 @@ console.log(this.issue);
             <div class="divTableHead"> </div> 
         </div>
 		<div class="divTableRow"> 
-                <div class="divTableCell2">${temper}</div>
+                <div class="divTableCell2">${this.tempNow}</div>
             </div></div></div> `
         wrapper.appendChild(cur);
 
@@ -304,15 +369,15 @@ console.log(this.issue);
 		`<div class="divTable">
           <div class="divTableBody">
         <div class="divTableRow">
-            <div class="divTableHead">${this.translate("Humidity")}</div>
-            <div class="divTableHead">${this.translate("Pressure")}</div>
-            <div class="divTableHead">${this.translate("Visibility")}</div>
+            <div class="divTableHead">${this.translate("Min")}</div>
+            <div class="divTableHead">${this.translate("Temp")}</div>
+            <div class="divTableHead">${this.translate("Max")}</div>
         </div>
 		
 		<div class="divTableRow">
-                <div class="divTableCell">${humid}</div>
-                <div class="divTableCell">${Baro}</div>
-                <div class="divTableCell">${Miles}</div>
+                <div class="divTableCell">${this.tempLow + "&#176;C"}</div>
+                <div class="divTableCell">${this.tempNow + "&#176;C"}</div>
+                <div class="divTableCell">${this.tempMax + "&#176;C"}</div>
             </div></div></div>`;
          top.addEventListener("click", () => hideit(thisTop));			
 		 wrapper.appendChild(top);
@@ -335,15 +400,15 @@ console.log(this.issue);
    <div class="divTableBody">
    
       <div class="divTableRow">
-         <div class="divTableHead">${this.translate("Rise")}</div>
-         <div class="divTableHead">${this.translate("Hours of Light")}</div>
-         <div class="divTableHead">${this.translate("Set")}</div>
+         <div class="divTableHead">${this.translate("Rain&nbsp;%")}</div>
+         <div class="divTableHead">${this.translate("Rain&nbsp;mm")}</div>
+         <div class="divTableHead">${this.translate("Humidity")}</div>
       </div>
 	 
       <div class="divTableRow">
-         <div class="divTableCell">${sunrise}</div>
-         <div class="divTableCell">${this.secondsToString()}</div>
-         <div class="divTableCell">${sunset}</div>
+         <div class="divTableCell">${this.rainProb + "%"}</div>
+         <div class="divTableCell">${this.rainMM + "mm"}</div>
+         <div class="divTableCell">${this.humidity + "%"}</div>
       </div>
    </div>
 </div>`; 
@@ -360,7 +425,7 @@ console.log(this.issue);
 		var ev1= moment().format("HH");
 		var ev2  = moment(srss.sunrise).format("HH");
 		var ev3 =  moment(srss.sunset).format("HH"); 
-	// console.log("Now :"+ev1 + " Rise: "+ ev2+" Set:  "+ev3);	
+ console.log("Now :"+ev1 + " Rise: "+ ev2+" Set:  "+ev3);	
 		var lastDiv = document.createElement('div');
         var level = this.air.aqius;
 
@@ -382,15 +447,15 @@ console.log(this.issue);
    <div class="divTableBody">
   
       <div class="divTableRow">
-         <div class="divTableHead">${this.translate("AQI")}</div>
-         <div class="divTableHead">${(ev1 >= ev2 && ev1 <= ev3) ? "UV": this.translate("Night")}</div>
-         <div class="divTableHead">${this.translate("Wind")}</div>
+         <div class="divTableHead">${"Wind"}</div>
+         <div class="divTableHead">${"Cloud"}</div>
+         <div class="divTableHead">${"UV&nbsp;Index"}</div>
       </div>
 	   
       <div class="divTableRow">
-       <div class="divTableCell">${level}</div>
-         <div class="divTableCell">${(ev1 >= ev2 && ev1 <= ev3) ? UV : '<img src ='+this.config.moon[this.moon]+' height="27px" width="27px">'}</div>
-         <div class="divTableCell">${(this.config.lang != 'en') ? wind_kph : wind_mph}</div>
+       <div class="divTableCell">${this.windSpeedNow + "&#8209;" + this.windGustNow + "m/s"}</div>
+         <div class="divTableCell">${this.cloud + "%"}</div>
+         <div class="divTableCell">${this.uvNow + "/" + this.uvMax}</div>
       </div>
    </div>
 </div>`; 
@@ -530,4 +595,5 @@ console.log(this.issue);
 		}
         return wrapper;
     },
+    
 });

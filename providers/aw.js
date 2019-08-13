@@ -89,13 +89,17 @@ var provider = {
             method: 'GET'
         }, (error, response, body) => { 
             self.parseForecast(body);
+            console.log(url)
+            console.log(this.url)
         });
     },	
 	
 
     getData: function(callback) {
         var self = this;
-		url =  "http://dataservice.accuweather.com/currentconditions/v1/"+this.config.zip+"?apikey="+this.config.apiKey+"&language="+this.langarray[config.language]+"&details=true";
+		//url =  "http://dataservice.accuweather.com/currentconditions/v1/"+this.config.zip+"?apikey="+this.config.apiKey+"&language="+this.langarray[config.language]+"&details=true";
+        //url =  "http://dataservice.accuweather.com/forecasts/v1/daily/1day/"+this.config.zip+"?apikey="+this.config.apiKey+"&language="+this.langarray[config.language]+"&details=true";
+        url = "http://dataservice.accuweather.com/forecasts/v1/daily/1day/12407?apikey=AHkKOx8N8yimQUp9vqe3WAAwEDZG0ERm&details=true&metric=true";
         request(url, function(error, response, body) {
             if (error) {
                 console.log("Error: " + err.message);
@@ -103,6 +107,8 @@ var provider = {
             }
             callback(self.parseResponse(body));
         });
+        console.log(url)
+        console.log(this.url)
     },
    
    getSRSS: function(callback) {
@@ -206,9 +212,10 @@ var provider = {
 
     parseResponse: function(response) {
         var result = JSON.parse(response);
+        console.log(this.result)
         var current = {current:{
-        	weather: result[0].WeatherText,
-            temp_c: Math.round(result[0].Temperature.Metric.Value),
+        	weather: DailyForecasts[0].Day.IconPhrase,
+            temp_c: Math.round(result.DailyForecasts[0].Temperature.Maximum),
             temp_f: Math.round(result[0].Temperature.Imperial.Value),
             icon: this.imageArray[result[0].WeatherIcon],
             relative_humidity: result[0].RelativeHumidity,
@@ -229,6 +236,7 @@ var provider = {
              current,
              forecast
          };
+         console.log(this.current)
          return current;
     },
 

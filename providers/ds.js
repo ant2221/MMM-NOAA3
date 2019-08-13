@@ -32,26 +32,18 @@
          }
            this.config.apiKey = moduleConfig.apiKey;
  		   this.config.airKey = moduleConfig.airKey;
-		   this.config.userlat = moduleConfig.userlat;
-		   this.config.userlon = moduleConfig.userlon; 
+		   this.config.userlat = -33.84; //moduleConfig.userlat;
+		   this.config.userlon = 151.21; //moduleConfig.userlon; 
         }, 
 
-      
       getData: function(callback) {
 		 var self = this;
-		 if (config.language != 'gr') { 
 		 url = "https://api.darksky.net/forecast/"+this.config.apiKey+"/"+this.config.userlat+","+this.config.userlon+"?lang="+config.language;
-	     } else {
-		 url = "https://api.darksky.net/forecast/"+this.config.apiKey+"/"+this.config.userlat+","+this.config.userlon+"?lang=el";
-		 } 
-		 request(url, function (error, response, body) {
-            
-			 if (error) {
-			 
+         request(url, function (error, response, body) {
+             if (error) {
                  console.log("Error: " + err.message);
                  callback(null);
              }
-			 console.log(config.language);
              callback(self.parseResponse(body));
          });
      },
