@@ -224,21 +224,21 @@ height: 250%;}
     }
  .MMM-NOAA3    .divTableHead {
         line-height: 5px;
-        color: #A3F6A3;
+        color: #286d28;
         border-right: 1px solid rgb(0, 0, 0);
 		line-height: 2px;
         font-weight: 700;
     }
     .MMM-NOAA3    .divTableHeadYellow {
         line-height: 5px;
-        color: #F6F693;
+        color: #b1a82d;
         border-right: 1px solid rgb(0, 0, 0);
 		line-height: 2px;
         font-weight: 700;
     }
     .MMM-NOAA3    .divTableHeadRed {
         line-height: 5px;
-        color: #FF3333;
+        color: #801f1f;
         border-right: 1px solid rgb(0, 0, 0);
 		line-height: 2px;
         font-weight: 700;
