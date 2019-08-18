@@ -208,6 +208,7 @@ Module.register("MMM-NOAA3", {
         this.windGustNow = this.roundTemp(this.weatherData.currently.windGust);
         this.windSpeed = this.roundTemp(this.weatherData.daily.data[0].windSpeed);
         this.windGust = this.roundTemp(this.weatherData.daily.data[0].windGust);
+        this.hIndex = this.tempMax + ( this.tempMax * this.weatherData.daily.data[0].humidity ) - ( (this.weatherData.daily.data[0].humidity ^ 3 ) * 8); //for calculations meaning, see ../MMM-NOA3/examples/Heat Index Example Calculations
     
         //this.tempLowcolour = "divTableHeadRed";
 
@@ -243,9 +244,9 @@ Module.register("MMM-NOAA3", {
             this.rainColour = "divTableHead"
         }
         
-        if (this.humidity > 75) {
+        if (this.hIndex > 56) {
             this.humidityColour = "divTableHeadRed"
-        } else if (this.humidity > 60) {
+        } else if (this.hIndex > 49) {
             this.humidityColour = "divTableHeadYellow"
         } else {
             this.humidityColour = "divTableHead"
@@ -450,9 +451,9 @@ console.log(this.issue);
         </div>
 		
 		<div class="divTableRow">
-                <div class="divTableCell">${this.tempLow + "&#176;C"}</div>
-                <div class="divTableCell">${this.tempNow + "&#176;C"}</div>
-                <div class="divTableCell">${this.tempMax + "&#176;C"}</div>
+                <div class="divTableCell">${this.tempLow + "&#176;C"}<font color="#999999"><br>${"(" + this.tempLowFeel + "&#176;C)"}</div></font>
+                <div class="divTableCell">${this.tempNow + "&#176;C"}<font color="#999999"><br>${"(" + this.tempNowFeel + "&#176;C)"}</div></font>
+                <div class="divTableCell">${this.tempMax + "&#176;C"}<font color="#999999"><br>${"(" + this.tempMaxFeel + "&#176;C)"}</div></font>
             </div></div></div>`;
          top.addEventListener("click", () => hideit(thisTop));			
 		 wrapper.appendChild(top);
